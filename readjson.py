@@ -1,7 +1,7 @@
 
 import json
 
-file = open('result.txt','w')
+file = open('result2.txt','w')
 
 
 tweets=[]
@@ -11,7 +11,8 @@ for line in open('file2.jsonl-00000-of-00192','r'):
     count +=1
     data = json.loads(line)
     result.append(data['input_sequence'])
-    file.write(str(data['input_sequence'][0]))
+    a = str(data['input_sequence'][0])
+    file.write(a[1:-1])
     file.write('\n')
     # for i in data['input_sequence']:
     #      result.append(i)
