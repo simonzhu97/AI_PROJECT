@@ -1,3 +1,6 @@
+from collections import defaultdict
+import numpy as np
+
 class qLearningAgent:
     def __init__(self, num_iter=100, alpha=0.5, gamma=1, epsilon=0.5):
         self.num_iter = num_iter
@@ -5,36 +8,89 @@ class qLearningAgent:
         self.gamma = gamma
         self.epsilon = epsilon
         self.actions = []
+        self.Q_values = defaultdict(float)
 
-    def compute_actions_from_qvalue(self):
-        return __
+    def get_qvalue(self,state,action):
+        return self.Q_values[(state,action)]
+
+    def compute_value_from_qvalues(self,state):
+        a_s = self.get_legal_actions(state)
+        if not a_s: return 0.0
+        if len(a_s)==0: return 0.0
+        v_max = float("-inf")
+        for a in a_s:
+          v_max = max(v_max,self.get_qvalue(state,a))
+        return v_max
+
+    def compute_action_from_qvalues(self,state):
+        q_max = float("-inf")
+        a_max = None
+        for a in self.get_legal_actions(state):
+          if q_max <= self.get_qvalue(state,a):
+            q_max = self.get_qvalue(state,a)
+            a_max =  a
+        return a_max
 
     def compute_qvalue(self):
         return __
 
     def get_action(self):
-        #either return from compute_actions or random choice
-        return __
+        """
+          Compute the action to take in the current state.  With
+          probability self.epsilon, we should take a random action and
+          take the best policy action otherwise.  When there are
+          no legal actions, which is the case at the terminal state, we
+          choose None as the action.
+        """
+        legalActions = self.get_legal_actions(state)
+        action = None
+        # exploration
+        if np.random.uniform() >= self.epsilon:
+          action = random.choice(legalActions)
+        else:
+          action = self.compute_action_from_qvalues(state)
 
-    def update(self):
+        return action
+
+    def update(self,state,action,nextState,reward):
         #update both weights and self.actions
+        q_max =float("-inf")
+        a_s = self.get_legal_actions(nextState)
+        for a_next in a_s:
+          q_max = max(q_max,self.get_qvalue(nextState,a_next))
+        if len(a_s)==0:
+          sample = reward
+        else:
+          sample = reward + self.gamma*q_max
+        self.Q_values[(state,action)] = (1-self.alpha)*self.get_qvalue(state,action)+self.alpha*sample
+        return
         return
 
     def get_legal_actions(self, state):
-        return
+        """
+        This function returns the legal actions/all the pitches that the agent can choose for the next 
+        timestamp based on the current state. 
+        """
+
+        return state.get_next_possible_notes()
 
 
 
 class state:
-    def __init__(self, start_time, end_time):
+    def __init__(self, layout, start_time, end_time):
         self.start_time = start_time
         self.end_time = end_time
+        self.layout = layout
 
     def get_current_notes(self):
         return
 
     def get_previous_state(self):
         return
+
+    def get_next_possible_notes(self):
+        notes = layout.get_notes()
+        return notes[tuple(self.start_time,self.end_time)][1]
 
 
 class layout:
@@ -51,6 +107,8 @@ class layout:
         '''{(start_time, end_time):(origin_note, [new_notes])}'''
         pass
 
+    def get_notes(self):
+        return self.notes
 
 
 
