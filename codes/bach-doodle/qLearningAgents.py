@@ -7,7 +7,7 @@ class qLearningAgent:
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
-        self.actions = []
+        # self.actions = []
         self.Q_values = defaultdict(float)
 
     def get_qvalue(self,state,action):
@@ -32,7 +32,7 @@ class qLearningAgent:
         return a_max
 
     def compute_qvalue(self):
-        return __
+        pass
 
     def get_action(self):
         """
@@ -45,7 +45,7 @@ class qLearningAgent:
         legalActions = self.get_legal_actions(state)
         action = None
         # exploration
-        if np.random.uniform() >= self.epsilon:
+        if np.random.uniform() < self.epsilon:
           action = random.choice(legalActions)
         else:
           action = self.compute_action_from_qvalues(state)
@@ -53,7 +53,7 @@ class qLearningAgent:
         return action
 
     def update(self,state,action,nextState,reward):
-        #update both weights and self.actions
+        #update self.actions and the qvalues
         q_max =float("-inf")
         a_s = self.get_legal_actions(nextState)
         for a_next in a_s:
@@ -63,7 +63,6 @@ class qLearningAgent:
         else:
           sample = reward + self.gamma*q_max
         self.Q_values[(state,action)] = (1-self.alpha)*self.get_qvalue(state,action)+self.alpha*sample
-        return
         return
 
     def get_legal_actions(self, state):
