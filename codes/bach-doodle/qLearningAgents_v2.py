@@ -92,7 +92,7 @@ class state:
         self.pitch = pitch
         self.new_notes = new_notes
         self.actions = actions
-        
+
 
     def get_current_notes(self):
         """
@@ -113,10 +113,12 @@ class state:
             不是简单的一个note
         """
         start, end, notes = self.start_time, self.end_time, self.notes
-        timestamp = notes.keys().index((start,end))
-        start, end = notes.keys()[timestamp-1] if timestamp >= 1 else None
-        previous_origin = notes[notes.keys()[timestamp-1]][0] if timestamp >= 1 else None
-        previous_new = notes[notes.keys()[timestamp-1]][1] if timestamp >= 1 else None
+        keys = list(notes.keys())
+        keys.sort(key=lambda time:time[0])
+        timestamp = keys.index((start,end))
+        start, end = keys[timestamp-1] if timestamp >= 1 else None
+        previous_origin = notes[keys[timestamp-1]][0] if timestamp >= 1 else None
+        previous_new = notes[keys[timestamp-1]][1] if timestamp >= 1 else None
         previous_state = self.__init__(self.layout,start,end,previous_origin,previous_new)\
              if start and end and previous_origin and previous_new else None
         return previous_state
@@ -132,8 +134,10 @@ class state:
         # notes = layout.get_notes()
         # return notes[tuple(self.start_time,self.end_time)][1]
         start, end, notes = self.start_time, self.end_time, self.notes
-        timestamp = notes.keys().index((start,end))
-        previous = notes[notes.keys()[timestamp+1]][1] if timestamp < len(notes.keys())-1 else None
+        keys = list(notes.keys())
+        keys.sort(key=lambda time:time[0])
+        timestamp = keys.index((start,end))
+        previous = notes[keys[timestamp+1]][1] if timestamp < len(keys)-1 else None
         return previous
 
 
@@ -234,7 +238,7 @@ if __name__ == "__main__":
             origin, new = content[0].strip().split('\n'), content[1].strip().split('\n')
         layout_info = [origin, new]
         all_layouts[name] = layout_info
-    
+
     num = 0
     # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
@@ -271,10 +275,8 @@ if __name__ == "__main__":
         sorted_notes = sorted(notes, key = lambda time: time[0])
         for i in range(agent.num_iter):
             init_state = state(sorted_notes[0][0], sorted_notes[0][1], sorted_notes[1][0], sorted_notes[1][1])
-        
+
         print(origin)
         print(new)
         print(notes)
 
-    
-    
