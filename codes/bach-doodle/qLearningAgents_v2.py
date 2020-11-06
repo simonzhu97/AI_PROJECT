@@ -81,14 +81,13 @@ class qLearningAgent:
 
 
 class state:
-    def __init__(self, layout, start_time, end_time, pitch, new_notes, actions=None):
+    def __init__(self, start_time, end_time, pitch, new_notes, actions=None):
         """
             如果要是下面都建新object了那之前那几个parameter肯定不够啊
             先加上了 不用再删
         """
         self.start_time = start_time
         self.end_time = end_time
-        self.layout = layout # 这个layout是这么用的吗 我以为layout不是被当parameter传进去的
         self.notes = layout.notes
         self.pitch = pitch
         self.new_notes = new_notes
@@ -237,6 +236,7 @@ if __name__ == "__main__":
         all_layouts[name] = layout_info
     
     num = 0
+    # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
         num += 1
         print('File source:',epoch,'as',num,'of',len(all_layouts.keys()))
@@ -267,6 +267,11 @@ if __name__ == "__main__":
                     ...
                 }
         '''
+        agent = qLearningAgent()
+        sorted_notes = sorted(notes, key = lambda time: time[0])
+        for i in range(agent.num_iter):
+            init_state = state(sorted_notes[0][0], sorted_notes[0][1], sorted_notes[1][0], sorted_notes[1][1])
+        
         print(origin)
         print(new)
         print(notes)
