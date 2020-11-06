@@ -72,7 +72,7 @@ class qLearningAgent:
         timestamp based on the current state.
         """
 
-        return state.get_next_possible_notes()
+        return state.new_notes
 
 
 
@@ -194,7 +194,7 @@ def get_major_reward(root, pitch):
         return 20
     # span more than one octave
     else:
-        return -30
+        return -50
 
 
 def get_comparison_reward(root, pitch, prev_root, prev_pitch):
@@ -203,7 +203,7 @@ def get_comparison_reward(root, pitch, prev_root, prev_pitch):
     if prev_root in pitch_dissonance or prev_pitch in pitch_dissonance:
         reward -= 40
     if abs(pitch-prev_root) > 12 or abs(pitch-prev_pitch) > 12:
-        reward -= 30
+        reward -= 40
     if root == prev_root and pitch == prev_pitch:
         reward -= 10
     consonance = get_major_notes(root)
@@ -221,3 +221,4 @@ def get_comparison_reward(root, pitch, prev_root, prev_pitch):
 
 def get_total_reward(root, pitch, prev_root, prev_pitch):
     return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
+
