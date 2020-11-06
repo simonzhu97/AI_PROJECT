@@ -2,6 +2,9 @@ from collections import defaultdict
 import numpy as np
 import random
 from parse_midi
+import os
+import os.path as osp
+import re
 
 class qLearningAgent:
     def __init__(self, num_iter=100, alpha=0.5, gamma=1, epsilon=0.5):
@@ -148,17 +151,21 @@ def init_layout(info):
 
         另外感觉这个self.notes是很重要的 应该是全局的 不应该只在layout里加载
 
-        self.notes structure = {(start_time, end_time):(origin_note, [new_notes,...])}
+        self.notes structure = {(start_time, end_time):(origin_note_pitch, [new_note_pitch,...])}
     """
-    notes, origin, new = {}
-    origin, new = info
+    notes = {}
+    origin, new = info # origin = ['start,end,pitch',...]
     for n in origin:
-        start = n.start_time if n.start_time else 0.0
-        end, pitch = n.end_time, n.pitch
+        start, end, pitch = n.strip().split(',')
+        start, end, pitch = float(start), float(end), int(pitch)
         notes[(start,end)] = (pitch,[])
     for n in new:
-        start, end, pitch = n.start_time-8.25, n.end_time-8.25, n.pitch
-        notes[(start,end)][1].append(pitch)
+        start, end, pitch = n.strip().split(',')
+        start, end, pitch = float(start)-8.25, float(end)-8.25, int(pitch)
+        for timestamp in notes.keys():
+            if timestamp[0] <= start < timestamp[1]:
+                notes[timestamp][1].append(pitch)
+                break
     return origin, new, notes
 
 
@@ -218,6 +225,7 @@ def get_total_reward(root, pitch, prev_root, prev_pitch):
     return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
 
 
+<<<<<<< HEAD
 
 if __name__ == "__main__":
     # create layout
@@ -226,3 +234,54 @@ if __name__ == "__main__":
     agent = qLearningAgent()
     for i in range(agent.num_iter):
         s = state()
+=======
+if __name__ == "__main__":
+    input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    all_layouts = {}
+    for name in os.listdir(input_dir):
+        origin, new = [], []
+        path = osp.join(input_dir,name)
+        with open(path,'r') as file:
+            content = re.split('------------------------\n',file.read())
+            origin, new = content[0].strip().split('\n'), content[1].strip().split('\n')
+        layout_info = [origin, new]
+        all_layouts[name] = layout_info
+    
+    num = 0
+    for epoch in all_layouts.keys():
+        num += 1
+        print('File source:',epoch,'as',num,'of',len(all_layouts.keys()))
+        layout_info = all_layouts[epoch]
+        origin, new, notes = init_layout(layout_info)
+
+        '''
+            Start implementing from here
+            origin: 所有原曲旋律信息
+                [
+                    'note1_start_time,note1_end_time,note1_pitch',
+                    'note2_start_time,note2_end_time,note2_pitch',
+                    ...
+                ]
+            new: 所有magenta generated旋律信息
+                [
+                    'note1_start_time,note1_end_time,note1_pitch',
+                    'note2_start_time,note2_end_time,note2_pitch',
+                    ...
+                ]
+            notes: 所有旋律信息
+                {
+                    (note_start_time,note_end_time): #key
+                        (
+                            origin_note_pitch,
+                            [new_note1_pitch,new_note2_pitch,...]
+                        ),
+                    ...
+                }
+        '''
+        print(origin)
+        print(new)
+        print(notes)
+
+    
+    
+>>>>>>> refs/remotes/origin/master
