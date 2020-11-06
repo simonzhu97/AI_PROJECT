@@ -1,6 +1,7 @@
 from collections import defaultdict
 import numpy as np
 import random
+from parse_midi
 
 class qLearningAgent:
     def __init__(self, num_iter=100, alpha=0.5, gamma=1, epsilon=0.5):
@@ -35,7 +36,7 @@ class qLearningAgent:
     def compute_qvalue(self):
         pass
 
-    def get_action(self):
+    def get_action(self, state):
         """
           Compute the action to take in the current state.  With
           probability self.epsilon, we should take a random action and
@@ -64,6 +65,7 @@ class qLearningAgent:
         else:
           sample = reward + self.gamma*q_max
         self.Q_values[(state,action)] = (1-self.alpha)*self.get_qvalue(state,action)+self.alpha*sample
+        state.actions.append(self.get_action(state))
         return
 
     def get_legal_actions(self, state):
@@ -77,7 +79,7 @@ class qLearningAgent:
 
 
 class state:
-    def __init__(self, layout, start_time, end_time, pitch, new_notes):
+    def __init__(self, layout, start_time, end_time, pitch, new_notes, actions=None):
         """
             如果要是下面都建新object了那之前那几个parameter肯定不够啊
             先加上了 不用再删
@@ -88,6 +90,8 @@ class state:
         self.notes = layout.notes
         self.pitch = pitch
         self.new_notes = new_notes
+        self.actions = actions
+        
 
     def get_current_notes(self):
         """
@@ -212,3 +216,13 @@ def get_comparison_reward(root, pitch, prev_root, prev_pitch):
 
 def get_total_reward(root, pitch, prev_root, prev_pitch):
     return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
+
+
+
+if __name__ == "__main__":
+    # create layout
+    origin, new, notes = init_layout(info)
+    # agent
+    agent = qLearningAgent()
+    for i in range(agent.num_iter):
+        s = state()
