@@ -1,7 +1,6 @@
 from collections import defaultdict
 import numpy as np
 import random
-from parse_midi
 import os
 import os.path as osp
 import re
@@ -225,16 +224,6 @@ def get_total_reward(root, pitch, prev_root, prev_pitch):
     return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
 
 
-<<<<<<< HEAD
-
-if __name__ == "__main__":
-    # create layout
-    origin, new, notes = init_layout(info)
-    # agent
-    agent = qLearningAgent()
-    for i in range(agent.num_iter):
-        s = state()
-=======
 if __name__ == "__main__":
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     all_layouts = {}
@@ -284,4 +273,3 @@ if __name__ == "__main__":
 
     
     
->>>>>>> refs/remotes/origin/master
