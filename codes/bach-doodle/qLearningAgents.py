@@ -1,5 +1,6 @@
 from collections import defaultdict
 import numpy as np
+import random
 
 class qLearningAgent:
     def __init__(self, num_iter=100, alpha=0.5, gamma=1, epsilon=0.5):
@@ -67,8 +68,8 @@ class qLearningAgent:
 
     def get_legal_actions(self, state):
         """
-        This function returns the legal actions/all the pitches that the agent can choose for the next 
-        timestamp based on the current state. 
+        This function returns the legal actions/all the pitches that the agent can choose for the next
+        timestamp based on the current state.
         """
 
         return state.get_next_possible_notes()
@@ -76,35 +77,91 @@ class qLearningAgent:
 
 
 class state:
-    def __init__(self, layout, start_time, end_time):
+    def __init__(self, layout, start_time, end_time, pitch, new_notes):
+        """
+            如果要是下面都建新object了那之前那几个parameter肯定不够啊
+            先加上了 不用再删
+        """
         self.start_time = start_time
         self.end_time = end_time
-        self.layout = layout
+        self.layout = layout # 这个layout是这么用的吗 我以为layout不是被当parameter传进去的
+        self.notes = layout.notes
+        self.pitch = pitch
+        self.new_notes = new_notes
 
     def get_current_notes(self):
-        return
+        """
+            这个肯定是当前时间点的吧
+            __ _*_ __
+            但这个是要original pitch还是new pitch啊
+            都先return了 再看再删吧
+        """
+        start, end, notes = self.start_time, self.end_time, self.notes
+        current_origin, current_new = notes[(start,end)][0], notes[(start,end)][1]
+        return current_origin, current_new
 
     def get_previous_state(self):
-        return
+        """
+            这个是前一个时间点
+            _*_ __ __
+            这个是return state哈 那得重新建一个state object 用前一个的parameter
+            不是简单的一个note
+        """
+        start, end, notes = self.start_time, self.end_time, self.notes
+        timestamp = notes.keys().index((start,end))
+        start, end = notes.keys()[timestamp-1] if timestamp >= 1 else None
+        previous_origin = notes[notes.keys()[timestamp-1]][0] if timestamp >= 1 else None
+        previous_new = notes[notes.keys()[timestamp-1]][1] if timestamp >= 1 else None
+        previous_state = self.__init__(self.layout,start,end,previous_origin,previous_new)\
+             if start and end and previous_origin and previous_new else None
+        return previous_state
 
     def get_next_possible_notes(self):
-        notes = layout.get_notes()
-        return notes[tuple(self.start_time,self.end_time)][1]
+        """
+            我以为这个东西才应该是下一个时间点的
+            __ __ _*_
+            这也应该是个state object吧？既然前面那个都是return的state object
+            但notes也make sense所以先return的是notes
+            如果后面要class再改
+        """
+        # notes = layout.get_notes()
+        # return notes[tuple(self.start_time,self.end_time)][1]
+        start, end, notes = self.start_time, self.end_time, self.notes
+        timestamp = notes.keys().index((start,end))
+        previous = notes[notes.keys()[timestamp+1]][1] if timestamp < len(notes.keys())-1 else None
+        return previous
 
 
 class layout:
-    def __init__(self, note_seq_origin, note_seq_new):
-        self.seq_origin = note_seq_origin
-        self.seq_new = note_seq_new
+    def __init__(self, layout_info, note_seq_origin, note_seq_new):
+        self.seq_origin = None
+        self.seq_new = None
         self.notes = {}
-        self.update_notes()
-        # self.notes_origin = [] # a list of notes
-        # self.notes_new = []
+        self.init_layout(layout_info)
 
-    def update_notes(self):
-        #update self.notes
-        '''{(start_time, end_time):(origin_note, [new_notes])}'''
-        pass
+    def init_layout(self, info):
+        """
+            直接把所有initialize在这里做吧
+            layout_info = [
+                original note_seq,
+                new note_seq
+            ]
+            每个note_seq都是{start_time(0.0没有),end_time,pitch}需要用 其它key不用
+
+            另外感觉这个self.notes是很重要的 应该是全局的 不应该只在layout里加载
+        """
+        '''self.notes structure = {(start_time, end_time):(origin_note, [new_notes,...])}'''
+        notes, origin, new = {}
+        origin, new = info
+        for n in origin:
+            start = n.start_time if n.start_time else 0.0
+            end, pitch = n.end_time, n.pitch
+            notes[(start,end)] = (pitch,[])
+        for n in new:
+            start, end, pitch = n.start_time-8.25, n.end_time-8.25, n.pitch
+            notes[(start,end)][1].append(pitch)
+        
+        self.seq_origin, self.seq_new, self.notes = origin, new, notes
 
     def get_notes(self):
         return self.notes
@@ -160,10 +217,7 @@ def get_comparison_reward(root, pitch, prev_root, prev_pitch):
         reward += 10
 
     return reward
-        
+
 
 def get_total_reward(root, pitch, prev_root, prev_pitch):
     return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
-    
-
-

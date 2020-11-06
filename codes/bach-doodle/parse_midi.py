@@ -9,9 +9,8 @@ input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/infil
 infile = osp.join(input_dir,'2020-10-28_224250_1.midi')
 
 seq = note_seq.midi_file_to_note_sequence(infile)
-ori = [i for i in seq.notes if i.end_time <= 8.0]
-comb = [i for i in seq.notes if i.start_time >= 8.0]
-comb2 = [i for i in seq.notes if i.start_time >= 8.0]
+origin = [i for i in seq.notes if i.end_time <= 8.0]
+new = [i for i in seq.notes if i.start_time >= 8.0]
 
 def equal(note1,note2):
     if note1.start_time:
@@ -19,12 +18,9 @@ def equal(note1,note2):
     dur1, dur2 = note1.end_time-note1.start_time, note2.end_time-note2.start_time
     return dur1 == dur2 and note1.pitch == note2.pitch
 
-new = set()
-
-for o in ori:
-    for c in comb2:
+for o in origin:
+    for c in new:
         if equal(o,c):
-            comb2.remove(c)
+            new.remove(c)
 
-
-print(comb2)
+layout_info = [origin, new]
