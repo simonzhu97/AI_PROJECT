@@ -1,6 +1,9 @@
 from collections import defaultdict
 import numpy as np
 import random
+import os
+import os.path as osp
+import re
 
 class qLearningAgent:
     def __init__(self, num_iter=100, alpha=0.5, gamma=1, epsilon=0.5):
@@ -35,7 +38,7 @@ class qLearningAgent:
     def compute_qvalue(self):
         pass
 
-    def get_action(self):
+    def get_action(self, state):
         """
           Compute the action to take in the current state.  With
           probability self.epsilon, we should take a random action and
@@ -64,6 +67,7 @@ class qLearningAgent:
         else:
           sample = reward + self.gamma*q_max
         self.Q_values[(state,action)] = (1-self.alpha)*self.get_qvalue(state,action)+self.alpha*sample
+        state.actions.append(self.get_action(state))
         return
 
     def get_legal_actions(self, state):
@@ -77,17 +81,18 @@ class qLearningAgent:
 
 
 class state:
-    def __init__(self, layout, start_time, end_time, pitch, new_notes):
+    def __init__(self, start_time, end_time, pitch, new_notes, actions=None):
         """
             如果要是下面都建新object了那之前那几个parameter肯定不够啊
             先加上了 不用再删
         """
         self.start_time = start_time
         self.end_time = end_time
-        self.layout = layout # 这个layout是这么用的吗 我以为layout不是被当parameter传进去的
         self.notes = layout.notes
         self.pitch = pitch
         self.new_notes = new_notes
+        self.actions = actions
+
 
     def get_current_notes(self):
         """
@@ -108,10 +113,12 @@ class state:
             不是简单的一个note
         """
         start, end, notes = self.start_time, self.end_time, self.notes
-        timestamp = notes.keys().index((start,end))
-        start, end = notes.keys()[timestamp-1] if timestamp >= 1 else None
-        previous_origin = notes[notes.keys()[timestamp-1]][0] if timestamp >= 1 else None
-        previous_new = notes[notes.keys()[timestamp-1]][1] if timestamp >= 1 else None
+        keys = list(notes.keys())
+        keys.sort(key=lambda time:time[0])
+        timestamp = keys.index((start,end))
+        start, end = keys[timestamp-1] if timestamp >= 1 else None
+        previous_origin = notes[keys[timestamp-1]][0] if timestamp >= 1 else None
+        previous_new = notes[keys[timestamp-1]][1] if timestamp >= 1 else None
         previous_state = self.__init__(self.layout,start,end,previous_origin,previous_new)\
              if start and end and previous_origin and previous_new else None
         return previous_state
@@ -127,44 +134,41 @@ class state:
         # notes = layout.get_notes()
         # return notes[tuple(self.start_time,self.end_time)][1]
         start, end, notes = self.start_time, self.end_time, self.notes
-        timestamp = notes.keys().index((start,end))
-        previous = notes[notes.keys()[timestamp+1]][1] if timestamp < len(notes.keys())-1 else None
+        keys = list(notes.keys())
+        keys.sort(key=lambda time:time[0])
+        timestamp = keys.index((start,end))
+        previous = notes[keys[timestamp+1]][1] if timestamp < len(keys)-1 else None
         return previous
 
 
-class layout:
-    def __init__(self, layout_info, note_seq_origin, note_seq_new):
-        self.seq_origin = None
-        self.seq_new = None
-        self.notes = {}
-        self.init_layout(layout_info)
+def init_layout(info):
+    """
+        每次main的时候跑一次
+        直接把所有initialize在这里做吧
+        layout_info = [
+            original note_seq,
+            new note_seq
+        ]
+        每个note_seq都是{start_time(0.0没有),end_time,pitch}需要用 其它key不用
 
-    def init_layout(self, info):
-        """
-            直接把所有initialize在这里做吧
-            layout_info = [
-                original note_seq,
-                new note_seq
-            ]
-            每个note_seq都是{start_time(0.0没有),end_time,pitch}需要用 其它key不用
+        另外感觉这个self.notes是很重要的 应该是全局的 不应该只在layout里加载
 
-            另外感觉这个self.notes是很重要的 应该是全局的 不应该只在layout里加载
-        """
-        '''self.notes structure = {(start_time, end_time):(origin_note, [new_notes,...])}'''
-        notes, origin, new = {}
-        origin, new = info
-        for n in origin:
-            start = n.start_time if n.start_time else 0.0
-            end, pitch = n.end_time, n.pitch
-            notes[(start,end)] = (pitch,[])
-        for n in new:
-            start, end, pitch = n.start_time-8.25, n.end_time-8.25, n.pitch
-            notes[(start,end)][1].append(pitch)
-        
-        self.seq_origin, self.seq_new, self.notes = origin, new, notes
-
-    def get_notes(self):
-        return self.notes
+        self.notes structure = {(start_time, end_time):(origin_note_pitch, [new_note_pitch,...])}
+    """
+    notes = {}
+    origin, new = info # origin = ['start,end,pitch',...]
+    for n in origin:
+        start, end, pitch = n.strip().split(',')
+        start, end, pitch = float(start), float(end), int(pitch)
+        notes[(start,end)] = (pitch,[])
+    for n in new:
+        start, end, pitch = n.strip().split(',')
+        start, end, pitch = float(start)-8.25, float(end)-8.25, int(pitch)
+        for timestamp in notes.keys():
+            if timestamp[0] <= start < timestamp[1]:
+                notes[timestamp][1].append(pitch)
+                break
+    return origin, new, notes
 
 
 
@@ -221,4 +225,58 @@ def get_comparison_reward(root, pitch, prev_root, prev_pitch):
 
 def get_total_reward(root, pitch, prev_root, prev_pitch):
     return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
+
+
+if __name__ == "__main__":
+    input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    all_layouts = {}
+    for name in os.listdir(input_dir):
+        origin, new = [], []
+        path = osp.join(input_dir,name)
+        with open(path,'r') as file:
+            content = re.split('------------------------\n',file.read())
+            origin, new = content[0].strip().split('\n'), content[1].strip().split('\n')
+        layout_info = [origin, new]
+        all_layouts[name] = layout_info
+
+    num = 0
+    # all_layouts's key: file name, value: [origin, new]
+    for epoch in all_layouts.keys():
+        num += 1
+        print('File source:',epoch,'as',num,'of',len(all_layouts.keys()))
+        layout_info = all_layouts[epoch]
+        origin, new, notes = init_layout(layout_info)
+
+        '''
+            Start implementing from here
+            origin: 所有原曲旋律信息
+                [
+                    'note1_start_time,note1_end_time,note1_pitch',
+                    'note2_start_time,note2_end_time,note2_pitch',
+                    ...
+                ]
+            new: 所有magenta generated旋律信息
+                [
+                    'note1_start_time,note1_end_time,note1_pitch',
+                    'note2_start_time,note2_end_time,note2_pitch',
+                    ...
+                ]
+            notes: 所有旋律信息
+                {
+                    (note_start_time,note_end_time): #key
+                        (
+                            origin_note_pitch,
+                            [new_note1_pitch,new_note2_pitch,...]
+                        ),
+                    ...
+                }
+        '''
+        agent = qLearningAgent()
+        sorted_notes = sorted(notes, key = lambda time: time[0])
+        for i in range(agent.num_iter):
+            init_state = state(sorted_notes[0][0], sorted_notes[0][1], sorted_notes[1][0], sorted_notes[1][1])
+
+        print(origin)
+        print(new)
+        print(notes)
 
