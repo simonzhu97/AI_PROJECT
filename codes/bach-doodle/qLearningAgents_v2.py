@@ -274,7 +274,8 @@ def get_total_reward(root, pitch, prev_root, prev_pitch):
 
 if __name__ == "__main__":
     # input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
-    input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    out_file = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_qvals.txt'
     all_layouts = {}
     for name in os.listdir(input_dir):
         origin, new = [], []
@@ -286,6 +287,7 @@ if __name__ == "__main__":
         all_layouts[name] = layout_info
 
     num = 0
+    result = []
     # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
         num += 1
@@ -323,8 +325,8 @@ if __name__ == "__main__":
         # dic = collections.OrderedDict(sorted(notes.items(), key=lambda kv: kv[0], reverse=True))
 
         # print('notes:', notes)
+        all_actions = []
         for i in range(agent.num_iter):
-            all_actions = []
             # print(sorted_notes)
             # print(sorted_notes[1][1])
             count = 0
@@ -345,13 +347,12 @@ if __name__ == "__main__":
                 if s.is_end():
                     break
                 s = next_s
-            # print(s.actions)
             all_actions.append(s.actions)
-        file = open("results"+name, "w")
-        # print(all_actions)
-        # for i in all_actions:
-        #     print(len(i))
-        # print(origin)
-        # print(new)
-        # print(notes)
-
+        
+        selected = ','.join([str(i) for i in all_actions[-1]])
+        line = ','.join([epoch,selected])
+        result.append(line)
+    print('Writing all selected pitches into files...')
+    with open(out_file,'w') as file:
+        file.writelines(result)
+    print('Finished')
