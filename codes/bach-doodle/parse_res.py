@@ -16,7 +16,7 @@ if not os.path.isdir(out_dir):
 
 info = {}
 
-print('Reading selected data', name)
+print('Reading data')
 with open(input_file,'r') as file:
     data = file.readlines()
     for line in data:
