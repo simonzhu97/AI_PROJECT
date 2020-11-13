@@ -50,6 +50,7 @@ class qLearningAgent:
         action = None
         # exploration
         if np.random.uniform() < self.epsilon:
+        #   print('legal ac',legalActions)
           action = random.choice(legalActions)
         else:
           action = self.compute_action_from_qvalues(state)
@@ -59,15 +60,22 @@ class qLearningAgent:
     def update(self,state,action,nextState,reward):
         #update self.actions and the qvalues
         q_max =float("-inf")
-        a_s = self.get_legal_actions(nextState)
-        for a_next in a_s:
-          q_max = max(q_max,self.get_qvalue(nextState,a_next))
-        if len(a_s)==0:
-          sample = reward
+        if not state.is_end():
+            a_s = self.get_legal_actions(nextState)
+            for a_next in a_s:
+                q_max = max(q_max,self.get_qvalue(nextState,a_next))
+            if len(a_s)==0:
+                sample = reward
+            else:
+                sample = reward + self.gamma*q_max
         else:
-          sample = reward + self.gamma*q_max
+            # print("?")
+            sample = reward
         self.Q_values[(state,action)] = (1-self.alpha)*self.get_qvalue(state,action)+self.alpha*sample
         state.actions.append(self.get_action(state))
+        # print('hello',state.actions)
+        # print(state.end_time, state.is_end())
+        # print('next state', nextState)
         return
 
     def get_legal_actions(self, state):
@@ -75,23 +83,34 @@ class qLearningAgent:
         This function returns the legal actions/all the pitches that the agent can choose for the next
         timestamp based on the current state.
         """
-
-        return state.new_notes
+        if not state.new_notes:
+            # print("???",state.new_notes)
+            # return state.new_notes 
+            return [state.root]
+        else:
+            # print('state.root')
+            # print("!!!")
+            # return [state.root]
+            return state.new_notes
 
 
 
 class state:
-    def __init__(self, start_time, end_time, pitch, new_notes, actions=None):
+    def __init__(self, start_time, end_time, root, new_notes, notes, actions=[]):
         """
             如果要是下面都建新object了那之前那几个parameter肯定不够啊
             先加上了 不用再删
         """
         self.start_time = start_time
         self.end_time = end_time
-        self.notes = layout.notes
-        self.pitch = pitch
+        self.notes = notes
+        self.root = root
+        # a list of integers representing pitches
         self.new_notes = new_notes
         self.actions = actions
+
+    def is_end(self):
+        return float(self.end_time) == 8.0
 
 
     def get_current_notes(self):
@@ -118,10 +137,33 @@ class state:
         timestamp = keys.index((start,end))
         start, end = keys[timestamp-1] if timestamp >= 1 else None
         previous_origin = notes[keys[timestamp-1]][0] if timestamp >= 1 else None
-        previous_new = notes[keys[timestamp-1]][1] if timestamp >= 1 else None
-        previous_state = self.__init__(self.layout,start,end,previous_origin,previous_new)\
-             if start and end and previous_origin and previous_new else None
+        previous_new = notes[keys[timestamp-1]][1] if timestamp >= 1 else []
+        previous_state = state(start,end,previous_origin,previous_new, self.notes)\
+             if start != None and end and previous_origin and previous_new !=None else None
+        # print("prev state:", previous_state.end_time)
         return previous_state
+
+    def get_next_state(self):
+        """
+            我以为这个东西才应该是下一个时间点的
+            __ __ _*_
+            这也应该是个state object吧？既然前面那个都是return的state object
+            但notes也make sense所以先return的是notes
+            如果后面要class再改
+        """
+        # if self.is_end():
+        #     return state()
+        start, end, notes = self.start_time, self.end_time, self.notes
+        keys = list(notes.keys())
+        keys.sort(key=lambda time:time[0])
+        timestamp = keys.index((start,end))
+        start, end = keys[timestamp+1] if timestamp < len(keys)-1 else (None, None)
+        next_origin = notes[keys[timestamp+1]][0] if timestamp < len(keys)-1 else None
+        next_new = notes[keys[timestamp+1]][1] if timestamp < len(keys)-1  else []
+        next_state = state(start,end,next_origin,next_new, self.notes, self.actions) if start and end and next_origin and next_new != None else None
+        # print('start:',start, 'end:',end, 'next_origin', next_origin, 'next new', next_new)
+        # print(next_state)
+        return next_state
 
     def get_next_possible_notes(self):
         """
@@ -211,7 +253,7 @@ def get_comparison_reward(root, pitch, prev_root, prev_pitch):
     if root == prev_root and pitch == prev_pitch:
         reward -= 10
     consonance = get_major_notes(root)
-    consonance.extend(root+12, root-12)
+    consonance.extend([root+12, root-12])
     sub = [ele for ele in consonance if ele in [root, pitch, prev_root, prev_root]]
     if len(sub) == 4:
         reward += 40
@@ -224,11 +266,15 @@ def get_comparison_reward(root, pitch, prev_root, prev_pitch):
 
 
 def get_total_reward(root, pitch, prev_root, prev_pitch):
-    return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
+    if pitch is None or prev_pitch is None:
+        return 0
+    else:
+        return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
 
 
 if __name__ == "__main__":
-    input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    # input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     all_layouts = {}
     for name in os.listdir(input_dir):
         origin, new = [], []
@@ -273,10 +319,39 @@ if __name__ == "__main__":
         '''
         agent = qLearningAgent()
         sorted_notes = sorted(notes, key = lambda time: time[0])
-        for i in range(agent.num_iter):
-            init_state = state(sorted_notes[0][0], sorted_notes[0][1], sorted_notes[1][0], sorted_notes[1][1])
+        # import collections 
+        # dic = collections.OrderedDict(sorted(notes.items(), key=lambda kv: kv[0], reverse=True))
 
-        print(origin)
-        print(new)
-        print(notes)
+        # print('notes:', notes)
+        for i in range(agent.num_iter):
+            all_actions = []
+            # print(sorted_notes)
+            # print(sorted_notes[1][1])
+            count = 0
+            # global global_actions = []
+            init_state = state(sorted_notes[0][0], sorted_notes[0][1], notes[sorted_notes[0]][0], notes[sorted_notes[0]][1], notes,[])
+            s = init_state
+            while (1):
+                # print(count)
+                count +=1
+                # agent.compute_value_from_qvalues(s)
+                action = agent.get_action(s)
+                next_s = s.get_next_state()
+
+                if s == init_state:
+                    agent.update(s, action, next_s, get_major_reward(s.root, action))
+                else:
+                    agent.update(s, action, next_s, get_total_reward(s.root, action, s.get_previous_state().root, s.actions[-1]))
+                if s.is_end():
+                    break
+                s = next_s
+            # print(s.actions)
+            all_actions.append(s.actions)
+        file = open("results"+name, "w")
+        # print(all_actions)
+        # for i in all_actions:
+        #     print(len(i))
+        # print(origin)
+        # print(new)
+        # print(notes)
 
