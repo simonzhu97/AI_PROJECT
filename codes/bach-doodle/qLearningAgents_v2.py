@@ -275,7 +275,7 @@ def get_total_reward(root, pitch, prev_root, prev_pitch):
 if __name__ == "__main__":
     # input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
-    out_file = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_qvals.txt'
+    out_file = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected.txt'
     all_layouts = {}
     for name in os.listdir(input_dir):
         origin, new = [], []
