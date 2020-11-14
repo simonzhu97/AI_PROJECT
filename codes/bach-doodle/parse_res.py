@@ -35,9 +35,9 @@ for i in info.keys():
         origin_info = [l.strip().split(',') for l in lines]
     
     model = mpb.NoteSequence()
-    for i in range(12):
-        start, end, origin = origin_info[i]
-        new = new_pitchs[i]
+    for j in range(12):
+        start, end, origin = origin_info[j]
+        new = new_pitchs[j]
         model.notes.add(pitch=int(origin),start_time=float(start),end_time=float(end),velocity=80)
         model.notes.add(pitch=int(new),start_time=float(start),end_time=float(end),velocity=80)
     model.total_time=8
