@@ -291,7 +291,7 @@ if __name__ == "__main__":
     # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
         num += 1
-        print('File source:',epoch,'as',num,'of',len(all_layouts.keys()))
+        print('File source:',epoch,'\n\tas',num,'of',len(all_layouts.keys()),'files')
         layout_info = all_layouts[epoch]
         origin, new, notes = init_layout(layout_info)
 

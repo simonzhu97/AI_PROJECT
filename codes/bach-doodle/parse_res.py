@@ -7,7 +7,8 @@ import os.path as osp
 
 res = []
 
-input_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/selected_notes/all_selected.txt'
+selected_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected.txt'
+original_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
 out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/final_midi/'
 if not os.path.isdir(out_dir):
     command = ['mkdir', out_dir]
@@ -16,39 +17,35 @@ if not os.path.isdir(out_dir):
 
 info = {}
 
-print('Reading data')
-with open(input_file,'r') as file:
+print('\tLoading data...')
+with open(selected_file,'r') as file:
     data = file.readlines()
     for line in data:
         content = line.strip().split(',')
         info[content[0]] = content[1:]
 print(info)
+print('\tLoading finished')
 
-#     print('\tgenerating 100 midi files...')
-#     #for single in res:
-#     for i in range(100):
-#         single = res[i]
-#         model = mpb.NoteSequence()
-#         notes = single[0]['notes']
-#         tempos = single[0]['tempos'][0]['qpm']
-#         total_time = single[0]['totalTime']
-#         for n in notes:
-#             if 'startTime' not in n.keys():
-#                 start_time = 0.0
-#             else:
-#                 start_time = n['startTime']
-#             pitch, end_time, velocity = n['pitch'], n['endTime'], n['velocity']
-#             model.notes.add(pitch=pitch, start_time=start_time, end_time=end_time, velocity=velocity)
-#         model.total_time = total_time
-#         model.tempos.add(qpm=tempos)
+print('\tTransfering txt to result midi...')
+for i in info.keys():
+    origin_path = osp.join(original_file,i)
+    new_pitchs = info[i]
+    origin_info = []
+    with open(origin_path,'r') as file:
+        lines = [file.readline() for i in range(12)]
+        origin_info = [l.strip().split(',') for l in lines]
+    
+    model = mpb.NoteSequence()
+    for i in range(12):
+        start, end, origin = origin_info[i]
+        new = new_pitchs[i]
+        model.notes.add(pitch=origin,start_time=start,end_time=end,velocity=80)
+        model.notes.add(pitch=new,start_time=start,end_time=end,velocity=80)
+    model.total_time=8
+    model.tempos.add(qpm=60)
 
-#         num = name.split('.')[1].split('-')[1]
-#         out_dir = osp.join(out_file_dir,num)
-#         if not os.path.isdir(out_dir):
-#             command = ['mkdir', out_dir]
-#             print(' '.join(command))
-#             run_result = os.system(' '.join(command))
-#         out = osp.join(out_dir,str(i+1)+'.midi')
+    name = i.strip().split('.')[0]+'_result.midi'
+    out = osp.join(out_dir,name)
 
-#         note_seq.sequence_proto_to_midi_file(model, out)
-#     print('\tgenerating finished\n')
+    note_seq.sequence_proto_to_midi_file(model, out)
+print('Finished')
