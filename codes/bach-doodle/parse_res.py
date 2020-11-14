@@ -23,7 +23,6 @@ with open(selected_file,'r') as file:
     for line in data:
         content = line.strip().split(',')
         info[content[0]] = content[1:]
-print(info)
 print('\tLoading finished')
 
 print('\tTransfering txt to result midi...')
@@ -39,8 +38,8 @@ for i in info.keys():
     for i in range(12):
         start, end, origin = origin_info[i]
         new = new_pitchs[i]
-        model.notes.add(pitch=origin,start_time=start,end_time=end,velocity=80)
-        model.notes.add(pitch=new,start_time=start,end_time=end,velocity=80)
+        model.notes.add(pitch=int(origin),start_time=float(start),end_time=float(end),velocity=80)
+        model.notes.add(pitch=int(new),start_time=float(start),end_time=float(end),velocity=80)
     model.total_time=8
     model.tempos.add(qpm=60)
 
