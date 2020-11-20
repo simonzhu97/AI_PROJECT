@@ -13,6 +13,7 @@ class qLearningAgent:
         self.epsilon = epsilon
         # self.actions = []
         self.Q_values = defaultdict(float)
+        self.decay = 0.96
 
     def get_qvalue(self,state,action):
         return self.Q_values[(state,action)]
@@ -54,6 +55,7 @@ class qLearningAgent:
           action = random.choice(legalActions)
         else:
           action = self.compute_action_from_qvalues(state)
+        self.epsilon *= self.decay
 
         return action
 
