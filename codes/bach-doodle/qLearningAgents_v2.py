@@ -419,7 +419,7 @@ if __name__ == "__main__":
                 
     # chosen_note = np.argmax(global_dic[orig-48][prev_orig-48][prev_pitch-48])+48
     print(global_dic[np.nonzero(global_dic)])
-    print('Writing all selected pitches into files...')
-    with open(out_file,'w') as file:
-        file.writelines(result)
-    print('Finished')
+    # print('Writing all selected pitches into files...')
+    # with open(out_file,'w') as file:
+    #     file.writelines(result)
+    # print('Finished')
