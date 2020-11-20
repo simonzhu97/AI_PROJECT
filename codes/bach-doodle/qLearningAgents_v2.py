@@ -5,6 +5,7 @@ import os
 import os.path as osp
 import re
 
+
 class qLearningAgent:
     def __init__(self, num_iter=100, alpha=0.5, gamma=1, epsilon=0.5):
         self.num_iter = num_iter
@@ -319,6 +320,10 @@ def get_total_reward(root, pitch, prev_root, prev_pitch):
 
 
 if __name__ == "__main__":
+    # index from 0 to 48 corresponds to notes from 36 to 84
+    # root; prev_root; prev_pitch; chosen_pitch
+    global_dic = np.zeros((49,49,49,49))
+
     # input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_file = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected_try.txt'
@@ -396,10 +401,24 @@ if __name__ == "__main__":
                     break
                 s = next_s
             all_actions.append(s.actions)
+
         
         selected = ','.join([str(i) for i in all_actions[-1]])
         line = ','.join([epoch,selected])
         result.append(line)
+        # update global_dic
+        origin_note = [int(note.split(",")[2]) for note in origin]
+        for i in range(1, len(origin_note)):
+            orig = origin_note[i]
+            pitch = all_actions[-1][i]
+            prev_orig = origin_note[i-1]
+            prev_pitch = all_actions[-1][i-1]
+            # print(orig,pitch,prev_orig,prev_pitch)
+            global_dic[orig-36][prev_orig-36][prev_pitch-36][pitch-36] += 1
+
+                
+    # chosen_note = np.argmax(global_dic[orig-48][prev_orig-48][prev_pitch-48])+48
+    print(global_dic[np.nonzero(global_dic)])
     print('Writing all selected pitches into files...')
     with open(out_file,'w') as file:
         file.writelines(result)
