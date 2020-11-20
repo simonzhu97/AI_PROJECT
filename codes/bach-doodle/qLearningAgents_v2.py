@@ -221,6 +221,13 @@ def get_major_notes(root):
     consonance = [major_third, perfect_fifth, second_inversion[0], second_inversion[1]]
     return consonance
 
+def get_minor_notes(root):
+    major_third = root + 3
+    perfect_fifth = root + 7
+    second_inversion = [root-9, root-5]
+    consonance = [major_third, perfect_fifth, second_inversion[0], second_inversion[1]]
+    return consonance  
+
 def get_dissonance(root):
     return [root+1, root+2, root-1, root-2, root-11, root-10, root+11, root+10]
 
@@ -228,6 +235,22 @@ def get_dissonance(root):
 # using major chords only
 def get_major_reward(root, pitch):
     highest_reward = get_major_notes(root)
+    dissonance = get_dissonance(root)
+    octaves = [root+12, root-12]
+    if pitch in highest_reward:
+        return 50
+    elif pitch in dissonance or pitch == root:
+        return -50
+    elif pitch in octaves:
+        return 10
+    elif abs(pitch-root) < 12:
+        return 20
+    # span more than one octave
+    else:
+        return -50
+
+def get_minor_reward(root, pitch):
+    highest_reward = get_minor_notes(root)
     dissonance = get_dissonance(root)
     octaves = [root+12, root-12]
     if pitch in highest_reward:
@@ -265,17 +288,40 @@ def get_comparison_reward(root, pitch, prev_root, prev_pitch):
     return reward
 
 
+def get_comparison_reward_minor(root, pitch, prev_root, prev_pitch):
+    reward = 0
+    pitch_dissonance = get_dissonance(pitch)
+    if prev_root in pitch_dissonance or prev_pitch in pitch_dissonance:
+        reward -= 40
+    if abs(pitch-prev_root) > 12 or abs(pitch-prev_pitch) > 12:
+        reward -= 40
+    if root == prev_root and pitch == prev_pitch:
+        reward -= 10
+    consonance = get_minor_notes(root)
+    consonance.extend([root+12, root-12])
+    sub = [ele for ele in consonance if ele in [root, pitch, prev_root, prev_root]]
+    if len(sub) == 4:
+        reward += 40
+    if len(sub) == 3:
+        reward += 30
+    if (root < max(prev_root, prev_pitch) and root > min(prev_root, prev_pitch)) or (pitch < max(prev_root, prev_pitch) and pitch > min(prev_root, prev_pitch)):
+        reward += 10
+
+    return reward
+
 def get_total_reward(root, pitch, prev_root, prev_pitch):
     if pitch is None or prev_pitch is None:
         return 0
     else:
-        return get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch)
+        return max(get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch),get_minor_reward(root, pitch)+get_comparison_reward_minor(root, pitch, prev_root, prev_pitch))
 
 
 if __name__ == "__main__":
     # input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
-    input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
-    out_file = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected.txt'
+    input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    out_file = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected_try.txt'
+    # input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    # out_file = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected.txt'
     all_layouts = {}
     for name in os.listdir(input_dir):
         origin, new = [], []
