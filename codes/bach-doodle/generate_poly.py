@@ -28,7 +28,7 @@ for json_dir in os.listdir(input_dir):
         midi_dir = osp.join(input_dir,json_dir)
         poly_dir = osp.join(output_dir,json_dir)
         command = [
-            'python',run_dir,'--bundle_file=',bundle_dir,'--output_dir=',poly_dir,'--num_output=1 --num_steps=68 --primer_midi=',midi_dir,'--condition_on_primer=false —-inject_primer_during_generation=true'
+            'python',run_dir,'--bundle_file='+bundle_dir,'--output_dir='+poly_dir,'--num_output=1 --num_steps=68 --primer_midi='+midi_dir,'--condition_on_primer=false —-inject_primer_during_generation=true'
         ]
 
         print(' '.join(command))
