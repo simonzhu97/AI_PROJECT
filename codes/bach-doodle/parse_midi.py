@@ -6,9 +6,24 @@ import os
 import os.path as osp
 
 input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_midi/'
-infile = osp.join(input_dir,'2020-10-28_224250_1.midi')
+# infile = osp.join(input_dir,'2020-10-28_224250_1.midi')
 output_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
-outfile = osp.join(output_dir,'2020-10-28_224250_1.txt')
+# outfile = osp.join(output_dir,'2020-10-28_224250_1.txt')
+
+for json_dir in os.listdir(input_dir):
+    full_json_dir = osp.join(input_dir,json_dir)
+    for item in os.listdir(full_json_dir):
+        midi_dir = osp.join(full_json_dir,item)
+        
+
+
+
+
+
+
+
+
+
 
 print('Parsing midi files...')
 seq = note_seq.midi_file_to_note_sequence(infile)
