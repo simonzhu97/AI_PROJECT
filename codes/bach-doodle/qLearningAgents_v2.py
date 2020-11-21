@@ -163,7 +163,7 @@ class state:
         start, end = keys[timestamp+1] if timestamp < len(keys)-1 else (None, None)
         next_origin = notes[keys[timestamp+1]][0] if timestamp < len(keys)-1 else None
         next_new = notes[keys[timestamp+1]][1] if timestamp < len(keys)-1  else []
-        next_state = state(start,end,next_origin,next_new, self.notes, self.actions) if start and end and next_origin and next_new != None else None
+        next_state = state(start,end,next_origin,next_new, self.notes, self.actions) if start and end and next_origin != None and next_new != None else None
         # print('start:',start, 'end:',end, 'next_origin', next_origin, 'next new', next_new)
         # print(next_state)
         return next_state
@@ -325,6 +325,7 @@ if __name__ == "__main__":
     global_dic = np.zeros((49,49,49,49))
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
+    out_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/num73_testfile.txt'
     # input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     # out_file = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected_try.txt'
     # input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
@@ -336,14 +337,47 @@ if __name__ == "__main__":
         with open(path,'r') as file:
             content = re.split('------------------------\n',file.read())
             origin, new = content[0].strip().split('\n'), content[1].strip().split('\n')
-        layout_info = [origin, new]
-        all_layouts[name] = layout_info
+        if float(origin[0].split(',')[1]) % 0.5 == 0 and float(origin[-1].split(',')[1]) == 8.0:
+            layout_info = [origin, new]
+            all_layouts[name] = layout_info
 
     num = 0
     result = []
     # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
         num += 1
+        
+        if num == 73:
+            layout_info = all_layouts[epoch]
+            origin, new, notes = init_layout(layout_info)
+            origin_note = [int(note.split(",")[2]) for note in origin]
+
+            count = 0
+            res = [epoch]
+
+            for i in range(len(origin_note)):
+                chosen_note = 0
+                if not i:
+                    chosen_note = 60
+                else:
+                    orig = origin_note[i]
+                    prev_orig = origin_note[i-1]
+                    prev_pitch = res[-1]
+                    chosen_note = np.argmax(global_dic[int(orig)-36][int(prev_orig)-36][int(prev_pitch)-36])+36
+                res.append(str(chosen_note))
+
+
+                print('\nWriting all selected pitches into files...')
+                result = ','.join(res)
+                with open(out_file,'w') as file:
+                    file.writelines(result)
+                print('Finished')
+            break
+
+
+
+
+
         print('File source:',epoch,'\n\tas',num,'of',len(all_layouts.keys()),'files')
         layout_info = all_layouts[epoch]
         origin, new, notes = init_layout(layout_info)
@@ -419,7 +453,4 @@ if __name__ == "__main__":
                 
     # chosen_note = np.argmax(global_dic[orig-48][prev_orig-48][prev_pitch-48])+48
     print(global_dic[np.nonzero(global_dic)])
-    # print('Writing all selected pitches into files...')
-    # with open(out_file,'w') as file:
-    #     file.writelines(result)
-    # print('Finished')
+    
