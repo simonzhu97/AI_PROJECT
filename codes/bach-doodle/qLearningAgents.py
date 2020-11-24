@@ -326,14 +326,23 @@ if __name__ == "__main__":
     # input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     # out_file = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected.txt'
     all_layouts = {}
+    # for name in os.listdir(input_dir):
+    #     origin, new = [], []
+    #     path = osp.join(input_dir,name)
+    #     with open(path,'r') as file:
+    #         content = re.split('------------------------\n',file.read())
+    #         origin, new = content[0].strip().split('\n'), content[1].strip().split('\n')
+    #     layout_info = [origin, new]
+    #     all_layouts[name] = layout_info
     for name in os.listdir(input_dir):
         origin, new = [], []
         path = osp.join(input_dir,name)
         with open(path,'r') as file:
             content = re.split('------------------------\n',file.read())
             origin, new = content[0].strip().split('\n'), content[1].strip().split('\n')
-        layout_info = [origin, new]
-        all_layouts[name] = layout_info
+        if float(origin[0].split(',')[1]) % 0.5 == 0 and float(origin[-1].split(',')[1]) == 8.0:
+            layout_info = [origin, new]
+            all_layouts[name] = layout_info
 
     num = 0
     result = []
