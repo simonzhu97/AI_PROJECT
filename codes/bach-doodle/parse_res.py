@@ -41,17 +41,18 @@ for i in info.keys():
         lines = [file.readline() for i in range(12)]
         origin_info = [l.strip().split(',') for l in lines]
     
-    model = mpb.NoteSequence()
-    for j in range(12):
-        start, end, origin = origin_info[j]
-        new = new_pitchs[j]
-        model.notes.add(pitch=int(origin),start_time=float(start),end_time=float(end),velocity=80)
-        model.notes.add(pitch=int(new),start_time=float(start),end_time=float(end),velocity=80)
-    model.total_time=8
-    model.tempos.add(qpm=60)
+    if len(origin_info) == 3:
+        model = mpb.NoteSequence()
+        for j in range(12):
+            start, end, origin = origin_info[j]
+            new = new_pitchs[j]
+            model.notes.add(pitch=int(origin),start_time=float(start),end_time=float(end),velocity=80)
+            model.notes.add(pitch=int(new),start_time=float(start),end_time=float(end),velocity=80)
+        model.total_time=8
+        model.tempos.add(qpm=60)
 
-    name = i.strip().split('.')[0]+'_result.midi'
-    out = osp.join(out_dir,name)
+        name = i.strip().split('.')[0]+'_result.midi'
+        out = osp.join(out_dir,name)
 
-    note_seq.sequence_proto_to_midi_file(model, out)
-print('Finished')
+        note_seq.sequence_proto_to_midi_file(model, out)
+    print('Finished')
