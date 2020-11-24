@@ -407,7 +407,7 @@ if __name__ == "__main__":
                 s = next_s
             all_actions.append(s.actions)
         
-        selected = ','.join([str(i) for i in all_actions[-1]])
+        selected = ','.join([str(i) for i in all_actions[-1]])+'\n'
         line = ','.join([epoch,selected])
         result.append(line)
     print('Writing all selected pitches into files...')
