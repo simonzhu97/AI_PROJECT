@@ -368,7 +368,7 @@ if __name__ == "__main__":
                     ind = np.argwhere(select==select[chosen_note-36])
                     if len(ind) > 1:
                         possible_note = [select[j] for j in ind]
-                        possible_rewards = [get_total_reward(orig, k, prev_orig, prev_pitch) for k in possible_note]
+                        possible_rewards = [get_total_reward(int(orig), int(k), int(prev_orig), int(prev_pitch)) for k in possible_note]
                         chosen_note = possible_note[np.argmax(possible_rewards)]
 
                 res.append(str(chosen_note))
