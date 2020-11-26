@@ -368,12 +368,12 @@ if __name__ == "__main__":
                     select = global_dic[int(orig)-36][int(prev_orig)-36][int(prev_pitch)-36]
                     chosen_note = np.argmax(select)+36
                     ind = np.argwhere(select==select[chosen_note-36])
+                    print(ind)
                     if len(ind) > 1:
                         possible_note = [select[j]+36 for j in ind]
                         possible_rewards = [get_total_reward(int(orig), int(k), int(prev_orig), int(prev_pitch)) for k in possible_note]
-                        print('reward',possible_rewards)
-                        print('argmax',np.argmax(possible_rewards))
                         chosen_note = possible_note[np.argmax(possible_rewards)]
+                        print('chosen',chosen_note)
 
                 res.append(str(chosen_note))
 
