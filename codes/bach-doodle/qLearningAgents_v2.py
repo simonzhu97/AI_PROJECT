@@ -342,6 +342,7 @@ if __name__ == "__main__":
             all_layouts[name] = layout_info
 
     num = 0
+    result = []
     # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
         num += 1
@@ -376,9 +377,9 @@ if __name__ == "__main__":
                 res.append(str(chosen_note))
 
             print('\nWriting all selected pitches into files...')
-            result = ','.join(res)+'\n'
+            out = ','.join(res)+'\n'
             with open(out_file,'w') as file:
-                file.writelines(result)
+                file.writelines(out)
             print('Finished')
             break
 
