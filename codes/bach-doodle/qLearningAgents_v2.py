@@ -323,7 +323,7 @@ def get_total_reward(root, pitch, prev_root, prev_pitch):
 def eval_result(orig_list, chosen_list):
     score = 100
     dist = 0
-    assert len(origin_note) == len(chosen_list)
+    # assert len(origin_note) == len(chosen_list)
     for i in range(len(orig_list)):
         if not i:
             dist += abs(int(chosen_list[i])-int(chosen_list[i-1]))
@@ -356,7 +356,7 @@ if __name__ == "__main__":
         with open(path,'r') as file:
             content = re.split('------------------------\n',file.read())
             origin, new = content[0].strip().split('\n'), content[1].strip().split('\n')
-        if float(origin[0].split(',')[1]) % 0.5 == 0 and float(origin[-1].split(',')[1]) == 8.0 and len(origin)==len(new):
+        if float(origin[0].split(',')[1]) % 0.5 == 0 and float(origin[-1].split(',')[1]) == 8.0:
             layout_info = [origin, new]
             all_layouts[name] = layout_info
 
@@ -476,6 +476,7 @@ if __name__ == "__main__":
         # update global_dic
         origin_note = [int(note.split(",")[2]) for note in origin]
         for i in range(1, len(origin_note)):
+            print(all_actions)
             orig = origin_note[i]
             pitch = all_actions[-1][i]
             prev_orig = origin_note[i-1]
