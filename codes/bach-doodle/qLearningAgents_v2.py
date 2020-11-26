@@ -341,7 +341,7 @@ if __name__ == "__main__":
     # index from 0 to 48 corresponds to notes from 36 to 84
     # root; prev_root; prev_pitch; chosen_pitch
     global_dic = np.zeros((49,49,49,49))
-    TESTING_FILES = 3000
+    TESTING_FILES = 5000
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/num73_testfile.txt'
