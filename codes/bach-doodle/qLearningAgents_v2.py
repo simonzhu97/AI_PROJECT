@@ -393,6 +393,7 @@ if __name__ == "__main__":
                     select = global_dic[int(orig)-ADDITION][int(prev_orig)-ADDITION][int(prev_pitch)-ADDITION]
                     chosen_note = np.argmax(select)+ADDITION
                     ind = np.argwhere(select==select[chosen_note-ADDITION]).flatten()
+                    input(ind)
                     if len(ind) > 1:
                         possible_note = [select[j]+ADDITION for j in ind]
                         input(possible_note)
