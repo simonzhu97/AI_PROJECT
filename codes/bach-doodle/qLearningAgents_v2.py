@@ -323,16 +323,20 @@ def get_total_reward(root, pitch, prev_root, prev_pitch):
 def eval_result(orig_list, chosen_list):
     score = 100
     dist = 0
+    chosen_list = chosen_list[1:]
     # assert len(origin_note) == len(chosen_list)
-    for i in range(len(orig_list)):
-        if not i:
-            dist += abs(int(chosen_list[i])-int(chosen_list[i-1]))
-        if int(chosen_list[i]) in get_dissonance(orig_list[i]):
-            score -=10
-        if abs(int(chosen_list[i])-int(orig_list[i])) > 12:
-            score -= 5
-    dist /= len(chosen_list)
-    score -= dist
+    try:
+        for i in range(len(orig_list)):
+            if not i:
+                dist += abs(int(chosen_list[i])-int(chosen_list[i-1]))
+            if int(chosen_list[i]) in get_dissonance(orig_list[i]):
+                score -= 10
+            if abs(int(chosen_list[i])-int(orig_list[i])) > 12:
+                score -= 5
+        dist /= len(chosen_list)
+        score -= dist
+    except:
+        score = np.nan
     return score
 
 
@@ -341,7 +345,7 @@ if __name__ == "__main__":
     # index from 0 to 48 corresponds to notes from 36 to 84
     # root; prev_root; prev_pitch; chosen_pitch
     global_dic = np.zeros((49,49,49,49))
-    TESTING_FILES = 2000
+    TESTING_FILES = 100
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/num73_testfile.txt'
@@ -489,6 +493,6 @@ if __name__ == "__main__":
 
                 
     # chosen_note = np.argmax(global_dic[orig-48][prev_orig-48][prev_pitch-48])+48
-    print('mean:',np.mean(score_testing),', s.d.:', np.std(score_testing))
+    print('mean:',np.nanmean(score_testing),', s.d.:', np.nanstd(score_testing))
     print(global_dic[np.nonzero(global_dic)])
     
