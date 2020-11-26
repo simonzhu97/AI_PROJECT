@@ -341,7 +341,7 @@ if __name__ == "__main__":
     # index from 0 to 48 corresponds to notes from 36 to 84
     # root; prev_root; prev_pitch; chosen_pitch
     global_dic = np.zeros((49,49,49,49))
-    TESTING_FILES = 5000
+    TESTING_FILES = 2000
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/num73_testfile.txt'
@@ -356,7 +356,7 @@ if __name__ == "__main__":
         with open(path,'r') as file:
             content = re.split('------------------------\n',file.read())
             origin, new = content[0].strip().split('\n'), content[1].strip().split('\n')
-        if float(origin[0].split(',')[1]) % 0.5 == 0 and float(origin[-1].split(',')[1]) == 8.0:
+        if float(origin[0].split(',')[1]) % 0.5 == 0 and float(origin[-1].split(',')[1]) == 8.0 and len(origin)==len(new):
             layout_info = [origin, new]
             all_layouts[name] = layout_info
 
