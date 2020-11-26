@@ -20,7 +20,7 @@ def equal(note1,note2):
 
 for mag_dir in os.listdir(input_dir):
     full_dir = osp.join(input_dir,mag_dir)
-    for variation in osp.listdir(full_dir):
+    for variation in os.listdir(full_dir):
         midi_dir = osp.join(full_dir, variation)
         outfile = osp.join(output_dir, variation+'.txt')
 
