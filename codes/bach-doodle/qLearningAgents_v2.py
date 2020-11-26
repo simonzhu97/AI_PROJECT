@@ -476,7 +476,7 @@ if __name__ == "__main__":
         # update global_dic
         origin_note = [int(note.split(",")[2]) for note in origin]
         for i in range(1, len(origin_note)):
-            print(all_actions)
+            print(len(origin_note),len(all_actions[-1]))
             orig = origin_note[i]
             pitch = all_actions[-1][i]
             prev_orig = origin_note[i-1]
