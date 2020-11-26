@@ -359,7 +359,7 @@ if __name__ == "__main__":
                 chosen_note = 0
                 orig = origin_note[i]
                 if not i:
-                    chosen_note = random.choice(get_major_notes(orig))
+                    chosen_note = int(random.choice(get_major_notes(orig)))
                 else:
                     prev_orig = origin_note[i-1]
                     prev_pitch = res[-1]
@@ -370,7 +370,7 @@ if __name__ == "__main__":
                     if len(ind) > 1:
                         possible_note = [select[j]+36 for j in ind]
                         possible_rewards = [get_total_reward(int(orig), int(k), int(prev_orig), int(prev_pitch)) for k in possible_note]
-                        chosen_note = possible_note[np.argmax(possible_rewards)]
+                        chosen_note = int(possible_note[np.argmax(possible_rewards)])
 
                 res.append(str(chosen_note))
 
