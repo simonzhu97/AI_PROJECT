@@ -349,7 +349,7 @@ if __name__ == "__main__":
     TESTING_FILES = 3000
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
-    out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/final_output'
+    out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/final_output.txt'
     # input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     # out_file = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected_try.txt'
     # input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
@@ -401,7 +401,6 @@ if __name__ == "__main__":
                 res.append(str(chosen_note))
             score_testing.append(eval_result(origin_note, res))
 
-            out_file = osp.join(out_dir,str(num)+'_'+epoch+'.txt')
             out = ','.join(res)+'\n'
             result.append(out)
             continue
@@ -480,7 +479,7 @@ if __name__ == "__main__":
                 break
 
     print('\nWriting all selected pitches into files...')
-    with open(out_file,'w') as file:
+    with open(out_dir,'w') as file:
         file.writelines(result)
     print('Finished')
 
