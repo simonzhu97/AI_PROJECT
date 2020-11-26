@@ -346,7 +346,7 @@ if __name__ == "__main__":
     # root; prev_root; prev_pitch; chosen_pitch
     global_dic = np.zeros((73,73,73,73))
     ADDITION = 24
-    TESTING_FILES = 3000
+    TESTING_FILES = 30
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/'
@@ -395,6 +395,7 @@ if __name__ == "__main__":
                     ind = np.argwhere(select==select[chosen_note-ADDITION]).flatten()
                     if len(ind) > 1:
                         possible_note = [select[j]+ADDITION for j in ind]
+                        input(possible_note)
                         possible_rewards = [get_total_reward(int(orig), int(k), int(prev_orig), int(prev_pitch)) for k in possible_note]
                         chosen_note = int(possible_note[np.argmax(possible_rewards)])
 
