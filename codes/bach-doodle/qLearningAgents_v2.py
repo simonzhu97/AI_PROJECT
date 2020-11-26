@@ -334,7 +334,7 @@ def eval_result(orig_list, chosen_list):
             if abs(int(chosen_list[i])-int(orig_list[i])) > 12:
                 score -= 5
         dist /= len(chosen_list)
-        score -= dist
+        score -= dist/2
     except:
         score = np.nan
     return score
@@ -349,7 +349,7 @@ if __name__ == "__main__":
     TESTING_FILES = 3000
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
-    out_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/num73_testfile.txt'
+    out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/'
     # input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     # out_file = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected_try.txt'
     # input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
@@ -401,10 +401,8 @@ if __name__ == "__main__":
                 res.append(str(chosen_note))
             score_testing.append(eval_result(origin_note, res))
 
-
-
-
             print('\nWriting all selected pitches into files...')
+            out_file = osp.join(out_dir,str(num)+'_'+epoch+'.txt')
             out = ','.join(res)+'\n'
             with open(out_file,'w') as file:
                 file.writelines(out)
