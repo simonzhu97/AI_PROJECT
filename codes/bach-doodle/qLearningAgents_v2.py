@@ -346,7 +346,7 @@ if __name__ == "__main__":
     # root; prev_root; prev_pitch; chosen_pitch
     global_dic = np.zeros((73,73,73,73))
     ADDITION = 24
-    TESTING_FILES = 30
+    TESTING_FILES = 3000
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/final_output'
@@ -404,6 +404,7 @@ if __name__ == "__main__":
             out_file = osp.join(out_dir,str(num)+'_'+epoch+'.txt')
             out = ','.join(res)+'\n'
             result.append(out)
+            continue
 
         print('File source:',epoch,'\n\tas',num,'of',len(all_layouts.keys()),'files')
         layout_info = all_layouts[epoch]
