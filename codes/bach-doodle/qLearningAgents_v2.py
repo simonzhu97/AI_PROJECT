@@ -342,7 +342,6 @@ if __name__ == "__main__":
             all_layouts[name] = layout_info
 
     num = 0
-    result = []
     # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
         num += 1
@@ -363,22 +362,24 @@ if __name__ == "__main__":
                 else:
                     prev_orig = origin_note[i-1]
                     prev_pitch = res[-1]
+
+                    print(orig, prev_orig, prev_pitch)
+
                     select = global_dic[int(orig)-36][int(prev_orig)-36][int(prev_pitch)-36]
                     chosen_note = np.argmax(select)+36
                     ind = np.argwhere(select==select[chosen_note-36])
                     if len(ind) > 1:
                         possible_note = [select[j]+36 for j in ind]
-                        possible_rewards = [get_total_reward(int(orig), int(float(k)), int(prev_orig), int(prev_pitch)) for k in possible_note]
+                        possible_rewards = [get_total_reward(int(orig), int(k), int(prev_orig), int(prev_pitch)) for k in possible_note]
                         chosen_note = possible_note[np.argmax(possible_rewards)]
 
                 res.append(str(chosen_note))
 
-
-                print('\nWriting all selected pitches into files...')
-                result = ','.join(res)
-                with open(out_file,'w') as file:
-                    file.writelines(result)
-                print('Finished')
+            print('\nWriting all selected pitches into files...')
+            result = ','.join(res)+'\n'
+            with open(out_file,'w') as file:
+                file.writelines(result)
+            print('Finished')
             break
 
 
