@@ -232,6 +232,7 @@ def get_minor_notes(root):
     return consonance  
 
 def get_dissonance(root):
+    root = int(root)
     return [root+1, root+2, root-1, root-2, root-11, root-10, root+11, root+10]
 
 #take in two pitch values; root is the original note and pitch is note being evaluated
@@ -319,10 +320,28 @@ def get_total_reward(root, pitch, prev_root, prev_pitch):
         return max(get_major_reward(root, pitch)+get_comparison_reward(root, pitch, prev_root, prev_pitch),get_minor_reward(root, pitch)+get_comparison_reward_minor(root, pitch, prev_root, prev_pitch))
 
 
+def eval_result(orig_list, chosen_list):
+    score = 100
+    dist = 0
+    assert len(origin_note) == len(chosen_list)
+    for i in range(len(orig_list)):
+        if not i:
+            dist += abs(int(chosen_list[i])-int(chosen_list[i-1]))
+        if int(chosen_list[i]) in get_dissonance(orig_list[i]):
+            score -=10
+        if abs(int(chosen_list[i])-int(orig_list[i])) > 12:
+            score -= 5
+    dist /= len(chosen_list)
+    score -= dist
+    return score
+
+
+
 if __name__ == "__main__":
     # index from 0 to 48 corresponds to notes from 36 to 84
     # root; prev_root; prev_pitch; chosen_pitch
     global_dic = np.zeros((49,49,49,49))
+    TESTING_FILES = 3000
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/num73_testfile.txt'
@@ -343,11 +362,13 @@ if __name__ == "__main__":
 
     num = 0
     result = []
+    score_testing=[]
     # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
         num += 1
         
-        if num == 73:
+        #for files in testing file:
+        if num >= TESTING_FILES:
             layout_info = all_layouts[epoch]
             origin, new, notes = init_layout(layout_info)
             origin_note = [int(note.split(",")[2]) for note in origin]
@@ -373,6 +394,9 @@ if __name__ == "__main__":
                         chosen_note = int(possible_note[np.argmax(possible_rewards)])
 
                 res.append(str(chosen_note))
+            score_testing.append(eval_result(origin_note, res))
+
+
 
 
             print('\nWriting all selected pitches into files...')
@@ -381,6 +405,7 @@ if __name__ == "__main__":
                 file.writelines(out)
             print('Finished')
             break
+        
 
 
 
@@ -460,5 +485,6 @@ if __name__ == "__main__":
 
                 
     # chosen_note = np.argmax(global_dic[orig-48][prev_orig-48][prev_pitch-48])+48
+    print('mean:',np.mean(score_testing),', s.d.:', np.std(score_testing))
     print(global_dic[np.nonzero(global_dic)])
     
