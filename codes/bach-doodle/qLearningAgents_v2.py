@@ -395,7 +395,7 @@ if __name__ == "__main__":
                     ind = np.argwhere(select==select[chosen_note-ADDITION]).flatten()
                     input(ind)
                     if len(ind) > 1:
-                        possible_note = [select[j]+ADDITION for j in ind]
+                        possible_note = [j+ADDITION for j in ind]
                         input(possible_note)
                         possible_rewards = [get_total_reward(int(orig), int(k), int(prev_orig), int(prev_pitch)) for k in possible_note]
                         chosen_note = int(possible_note[np.argmax(possible_rewards)])
