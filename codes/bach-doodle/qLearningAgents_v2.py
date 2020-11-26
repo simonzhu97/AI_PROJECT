@@ -374,6 +374,7 @@ if __name__ == "__main__":
         
         #for files in testing file:
         if num >= TESTING_FILES:
+            print('* TESTING *\tFile source:',epoch,'\n\tas',num,'of',len(all_layouts.keys()),'files')
             layout_info = all_layouts[epoch]
             origin, new, notes = init_layout(layout_info)
             origin_note = [int(note.split(",")[2]) for note in origin]
