@@ -342,9 +342,10 @@ def eval_result(orig_list, chosen_list):
 
 
 if __name__ == "__main__":
-    # index from 0 to 48 corresponds to notes from 36 to 84
+    # index from 0 to 72 corresponds to notes from 24 to 96
     # root; prev_root; prev_pitch; chosen_pitch
-    global_dic = np.zeros((49,49,49,49))
+    global_dic = np.zeros((73,73,73,73))
+    ADDITION = 24
     TESTING_FILES = 3000
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
@@ -389,11 +390,11 @@ if __name__ == "__main__":
                     prev_orig = origin_note[i-1]
                     prev_pitch = res[-1]
 
-                    select = global_dic[int(orig)-36][int(prev_orig)-36][int(prev_pitch)-36]
-                    chosen_note = np.argmax(select)+36
-                    ind = np.argwhere(select==select[chosen_note-36]).flatten()
+                    select = global_dic[int(orig)-ADDITION][int(prev_orig)-ADDITION][int(prev_pitch)-ADDITION]
+                    chosen_note = np.argmax(select)+ADDITION
+                    ind = np.argwhere(select==select[chosen_note-ADDITION]).flatten()
                     if len(ind) > 1:
-                        possible_note = [select[j]+36 for j in ind]
+                        possible_note = [select[j]+ADDITION for j in ind]
                         possible_rewards = [get_total_reward(int(orig), int(k), int(prev_orig), int(prev_pitch)) for k in possible_note]
                         chosen_note = int(possible_note[np.argmax(possible_rewards)])
 
@@ -480,7 +481,7 @@ if __name__ == "__main__":
                 prev_orig = origin_note[i-1]
                 prev_pitch = all_actions[-1][i-1]
                 # print(orig,pitch,prev_orig,prev_pitch)
-                global_dic[orig-36][prev_orig-36][prev_pitch-36][pitch-36] += 1
+                global_dic[orig-ADDITION][prev_orig-ADDITION][prev_pitch-ADDITION][pitch-ADDITION] += 1
             except:
                 break
 
