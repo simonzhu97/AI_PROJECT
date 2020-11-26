@@ -362,9 +362,8 @@ if __name__ == "__main__":
                     chosen_note = random.choice(get_major_notes(orig))
                 else:
                     prev_orig = origin_note[i-1]
+                    print(res)
                     prev_pitch = res[-1]
-
-                    print(orig, prev_orig, prev_pitch)
 
                     select = global_dic[int(orig)-36][int(prev_orig)-36][int(prev_pitch)-36]
                     chosen_note = np.argmax(select)+36
@@ -375,6 +374,7 @@ if __name__ == "__main__":
                         chosen_note = possible_note[np.argmax(possible_rewards)]
 
                 res.append(str(chosen_note))
+
 
             print('\nWriting all selected pitches into files...')
             out = ','.join(res)+'\n'
