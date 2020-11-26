@@ -334,7 +334,7 @@ def eval_result(orig_list, chosen_list):
             if abs(int(chosen_list[i])-int(orig_list[i])) > 12:
                 score -= 5
         dist /= len(chosen_list)
-        score -= dist/2
+        score -= dist
     except:
         score = np.nan
     return score
