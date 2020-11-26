@@ -349,7 +349,7 @@ if __name__ == "__main__":
     TESTING_FILES = 30
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
-    out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/'
+    out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/final_output'
     # input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     # out_file = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected_try.txt'
     # input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
@@ -393,22 +393,17 @@ if __name__ == "__main__":
                     select = global_dic[int(orig)-ADDITION][int(prev_orig)-ADDITION][int(prev_pitch)-ADDITION]
                     chosen_note = np.argmax(select)+ADDITION
                     ind = np.argwhere(select==select[chosen_note-ADDITION]).flatten()
-                    input(ind)
                     if len(ind) > 1:
                         possible_note = [j+ADDITION for j in ind]
-                        input(possible_note)
                         possible_rewards = [get_total_reward(int(orig), int(k), int(prev_orig), int(prev_pitch)) for k in possible_note]
                         chosen_note = int(possible_note[np.argmax(possible_rewards)])
 
                 res.append(str(chosen_note))
             score_testing.append(eval_result(origin_note, res))
 
-            print('\nWriting all selected pitches into files...')
             out_file = osp.join(out_dir,str(num)+'_'+epoch+'.txt')
             out = ','.join(res)+'\n'
-            with open(out_file,'w') as file:
-                file.writelines(out)
-            print('Finished')
+            result.append(out)
 
         print('File source:',epoch,'\n\tas',num,'of',len(all_layouts.keys()),'files')
         layout_info = all_layouts[epoch]
@@ -469,9 +464,7 @@ if __name__ == "__main__":
             all_actions.append(s.actions)
 
         
-        selected = ','.join([str(i) for i in all_actions[-1]])
-        line = ','.join([epoch,selected])
-        result.append(line)
+        
         # update global_dic
         origin_note = [int(note.split(",")[2]) for note in origin]
         for i in range(1, len(origin_note)):
@@ -485,7 +478,12 @@ if __name__ == "__main__":
             except:
                 break
 
-                
+    print('\nWriting all selected pitches into files...')
+    with open(out_file,'w') as file:
+        file.writelines(result)
+    print('Finished')
+
+
     # chosen_note = np.argmax(global_dic[orig-48][prev_orig-48][prev_pitch-48])+48
     print('mean:',np.nanmean(score_testing),', s.d.:', np.nanstd(score_testing))
     print(global_dic[np.nonzero(global_dic)])
