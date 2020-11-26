@@ -477,12 +477,15 @@ if __name__ == "__main__":
         origin_note = [int(note.split(",")[2]) for note in origin]
         for i in range(1, len(origin_note)):
             print(len(origin_note),len(all_actions[-1]))
-            orig = origin_note[i]
-            pitch = all_actions[-1][i]
-            prev_orig = origin_note[i-1]
-            prev_pitch = all_actions[-1][i-1]
-            # print(orig,pitch,prev_orig,prev_pitch)
-            global_dic[orig-36][prev_orig-36][prev_pitch-36][pitch-36] += 1
+            try:
+                orig = origin_note[i]
+                pitch = all_actions[-1][i]
+                prev_orig = origin_note[i-1]
+                prev_pitch = all_actions[-1][i-1]
+                # print(orig,pitch,prev_orig,prev_pitch)
+                global_dic[orig-36][prev_orig-36][prev_pitch-36][pitch-36] += 1
+            except:
+                break
 
                 
     # chosen_note = np.argmax(global_dic[orig-48][prev_orig-48][prev_pitch-48])+48
