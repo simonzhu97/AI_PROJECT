@@ -345,7 +345,7 @@ if __name__ == "__main__":
     # index from 0 to 48 corresponds to notes from 36 to 84
     # root; prev_root; prev_pitch; chosen_pitch
     global_dic = np.zeros((49,49,49,49))
-    TESTING_FILES = 100
+    TESTING_FILES = 3000
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/num73_testfile.txt'
@@ -408,12 +408,6 @@ if __name__ == "__main__":
             with open(out_file,'w') as file:
                 file.writelines(out)
             print('Finished')
-            break
-        
-
-
-
-
 
         print('File source:',epoch,'\n\tas',num,'of',len(all_layouts.keys()),'files')
         layout_info = all_layouts[epoch]
@@ -480,7 +474,6 @@ if __name__ == "__main__":
         # update global_dic
         origin_note = [int(note.split(",")[2]) for note in origin]
         for i in range(1, len(origin_note)):
-            print(len(origin_note),len(all_actions[-1]))
             try:
                 orig = origin_note[i]
                 pitch = all_actions[-1][i]
