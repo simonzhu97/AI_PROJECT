@@ -7,7 +7,7 @@ import os.path as osp
 
 res = []
 
-selected_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/3000_2020-11-26_155901_10.mid.txt.txt'
+selected_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/final_output.txt'
 original_file = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
 out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/final_midi/'
 
@@ -55,4 +55,5 @@ for i in info.keys():
         out = osp.join(out_dir,name)
 
         note_seq.sequence_proto_to_midi_file(model, out)
-    print('Finished')
+    break
+print('Finished')
