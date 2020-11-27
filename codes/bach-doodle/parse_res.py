@@ -1,9 +1,9 @@
-import json
 import magenta
 import note_seq
 from note_seq.protobuf import music_pb2 as mpb
 import os
 import os.path as osp
+import re
 
 res = []
 
@@ -38,12 +38,12 @@ for i in info.keys():
     new_pitchs = info[i]
     origin_info = []
     with open(origin_path,'r') as file:
-        lines = [file.readline() for i in range(12)]
+        lines = re.split('------------------------\n',file.read())[0].strip().split('\n')
         origin_info = [l.strip().split(',') for l in lines]
     
-    if len(origin_info) == 3:
+    if len(origin_info) == len(new_pitchs):
         model = mpb.NoteSequence()
-        for j in range(12):
+        for j in range(len(origin_info)):
             start, end, origin = origin_info[j]
             new = new_pitchs[j]
             model.notes.add(pitch=int(origin),start_time=float(start),end_time=float(end),velocity=80)
