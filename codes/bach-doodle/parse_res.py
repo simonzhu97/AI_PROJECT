@@ -55,5 +55,4 @@ for i in info.keys():
         out = osp.join(out_dir,name)
 
         note_seq.sequence_proto_to_midi_file(model, out)
-    break
 print('Finished')

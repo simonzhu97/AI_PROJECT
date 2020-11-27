@@ -4,6 +4,7 @@ import random
 import os
 import os.path as osp
 import re
+import matplotlib.pyplot as plt
 
 
 class qLearningAgent:
@@ -486,6 +487,7 @@ if __name__ == "__main__":
 
 
     # chosen_note = np.argmax(global_dic[orig-48][prev_orig-48][prev_pitch-48])+48
-    print('mean:',np.nanmean(score_testing),', s.d.:', np.nanstd(score_testing))
-    print(global_dic[np.nonzero(global_dic)])
-    
+    print('mean:',np.nanmean(score_testing),'\nstd:', np.nanstd(score_testing))
+    plt.hist(score_testing, bins=75)
+    plt.title("Score Distribution")
+    plt.show()
