@@ -490,4 +490,4 @@ if __name__ == "__main__":
     print('mean:',np.nanmean(score_testing),'\nstd:', np.nanstd(score_testing))
     plt.hist(score_testing, bins=75)
     plt.title("Score Distribution")
-    plt.show()
+    plt.savefig('ScoreDistribution.png')
