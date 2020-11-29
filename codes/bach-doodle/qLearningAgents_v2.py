@@ -334,7 +334,7 @@ def eval_result(orig_list, chosen_list):
                 score -= 10
             if abs(int(chosen_list[i])-int(orig_list[i])) > 12:
                 score -= 5
-        dist /= len(chosen_list)
+        dist /= len(chosen_list)-1
         score -= dist
     except:
         score = np.nan
@@ -347,10 +347,11 @@ if __name__ == "__main__":
     # root; prev_root; prev_pitch; chosen_pitch
     global_dic = np.zeros((73,73,73,73))
     ADDITION = 24
-    TESTING_FILES = 3000
+    TRAINING = 0.9
 
     input_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     out_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/final_output.txt'
+    score_dir = '/u/ys4aj/YuchenSun/Course/CS4710/AI_PROJECT/codes/bach-doodle/qlearn_midi/final_score.txt'
     # input_dir = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/magenta_txt/'
     # out_file = 'C:/Users/lin_x/Desktop/UVA/2.3/CS 4710/final_project/AI_PROJECT/codes/bach-doodle/qlearn_midi/all_selected_try.txt'
     # input_dir = 'C:/KevinSun/University/3rd_year/Classes/Semester1/CS4710/Final/AI_PROJECT/codes/bach-doodle/magenta_txt/'
@@ -369,12 +370,13 @@ if __name__ == "__main__":
     num = 0
     result = []
     score_testing=[]
+    scoring = {}
     # all_layouts's key: file name, value: [origin, new]
     for epoch in all_layouts.keys():
         num += 1
         
         #for files in testing file:
-        if num >= TESTING_FILES:
+        if num >= len(all_layouts.keys())*TRAINING:
             print('* TESTING *\tFile source:',epoch,'\n\tas',num,'of',len(all_layouts.keys()),'files')
             layout_info = all_layouts[epoch]
             origin, new, notes = init_layout(layout_info)
@@ -401,7 +403,9 @@ if __name__ == "__main__":
                         chosen_note = int(possible_note[np.argmax(possible_rewards)])
 
                 res.append(str(chosen_note))
-            score_testing.append(eval_result(origin_note, res))
+            s = eval_result(origin_note, res)
+            score_testing.append(s)
+            scoring[epoch] = s
 
             out = ','.join(res)+'\n'
             result.append(out)
@@ -479,6 +483,15 @@ if __name__ == "__main__":
                 global_dic[orig-ADDITION][prev_orig-ADDITION][prev_pitch-ADDITION][pitch-ADDITION] += 1
             except:
                 break
+    
+
+    sorted_scoring = sorted(scoring.items(), key=lambda info:info[1],reverse=True)
+    final_score = [','.join(list(s))+'\n' for s in sorted_scoring]
+    
+    print('\nWriting all scoring into files...')
+    with open(score_dir,'w') as file:
+        file.writelines(final_score)
+    print('Finished')
 
     print('\nWriting all selected pitches into files...')
     with open(out_dir,'w') as file:
