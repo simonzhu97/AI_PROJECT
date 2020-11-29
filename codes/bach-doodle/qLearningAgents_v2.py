@@ -486,7 +486,7 @@ if __name__ == "__main__":
     
 
     sorted_scoring = sorted(scoring.items(), key=lambda info:info[1],reverse=True)
-    final_score = [','.join(list(s))+'\n' for s in sorted_scoring]
+    final_score = [str(s[0])+','+str(s[1])+'\n' for s in sorted_scoring]
     
     print('\nWriting all scoring into files...')
     with open(score_dir,'w') as file:
