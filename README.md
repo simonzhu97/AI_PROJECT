@@ -10,9 +10,10 @@ Since the duet composition is a very common and useful practice for musicians, w
 [![Demo](https://img.youtube.com/vi/cKzO6WTX7_o/0.jpg)](https://www.youtube.com/watch?v=cKzO6WTX7_o&feature=youtu.be)
 
 ## Contributors
-Mint Lin, Yuchen Sun, Simon Zhu
-We express gratitude for Professor Lu Feng at the University of Virginia for assisting us in this project.
-
+Mint Lin, Yuchen Sun, Simon Zhu.
+<br>
+We express gratitude for Professor [Lu Feng](https://engineering.virginia.edu/faculty/lu-feng) at the University of Virginia for assisting us in this project.
+<br>
 ## References
 1. C.-Z. A. Huang et al., “Music Transformer,” arXiv:1809.04281 [cs, eess, stat], Dec. 2018, Accessed: Nov. 30, 2020. [Online]. Available: http://arxiv.org/abs/1809.04281.
 2. “Research,” Magenta. https://magenta.tensorflow.org/research/ (accessed Nov. 30, 2020).
